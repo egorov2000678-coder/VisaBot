@@ -19,7 +19,6 @@ from aiogram.utils import executor
 
 # ===================== НАСТРОЙКИ =====================
 
-# Токен и ID главного админа берем из переменных окружения
 API_TOKEN = os.getenv("BOT_TOKEN", "8535476214:AAGXYR7yLd_gK4mbzGA1EpagKgQMLHVvmdY").strip()
 if not API_TOKEN:
     raise RuntimeError("Не задана переменная окружения BOT_TOKEN")
@@ -419,34 +418,36 @@ def create_calendar() -> InlineKeyboardMarkup:
 
 
 EDIT_FIELDS = [
-    ("full_name", "ФИО"),
-    ("place_birth", "1. Место рождения"),
+    ("full_name", "1. Фамилия Имя"),
+    ("place_birth", "1*. Место рождения (заявителя)"),
     ("email", "2. Электронная почта"),
-    ("passport_number", "3. Номер паспорта"),
+    ("passport_number", "3. Серия и номер российского паспорта"),
     ("home_address", "4. Домашний адрес"),
-    ("phone", "5. Телефон"),
-    ("father_name", "6. ФИО отца"),
+    ("phone", "5. Ваш номер телефона"),
+    ("father_name", "6. Фамилия, имя отца"),
     ("father_birth_place", "7. Место рождения отца"),
-    ("mother_name", "8. ФИО матери"),
+    ("mother_name", "8. Фамилия, имя матери"),
     ("mother_birth_place", "8*. Место рождения матери"),
-    ("marital_status", "9. Семейное положение"),
+    ("marital_status", "9. Ваше семейное положение"),
     ("spouse_name", "10. ФИО супруга(и)"),
     ("spouse_birth_place", "11. Место рождения супруга(и)"),
-    ("work_place", "12. Место работы"),
-    ("work_address", "13. Адрес работы"),
+    ("work_place", "12. Название организации (место работы)"),
+    ("work_address", "13. Адрес места работы, должность, рабочий телефон"),
     ("airport", "14. Аэропорт прибытия"),
     ("visa_term", "15. Срок визы"),
     ("arrival_date", "16. Дата прибытия"),
     ("contact_name", "17. Контактное лицо"),
     ("contact_phone", "18. Телефон контакта"),
-    ("contact_address", "19. Адрес контакта"),
-    ("hotel_booked", "20. Отель"),
-    ("five_year_visa", "21. 5-летняя виза"),
-    ("visa_refusal", "22. Отказы по визе"),
-    ("trips_last_5y", "23. Поездки за 5 лет"),
-    ("last_visa_details", "24. Детали последней визы"),
-    ("outside_india", "25. Находились вне Индии"),
-    ("overstay", "26. Превышение сроков / exit permit"),
+    ("contact_address", "19. Адрес контактного лица"),
+    ("hotel_booked", "20. Отель забронирован"),
+    ("hotel_details", "20*. Название и адрес отеля"),
+    ("five_year_visa", "21. Были ли вы в Индии ранее"),
+    ("visa_refusal", "22. Отказы по визе в Индию"),
+    ("visa_refusal_details", "22*. Детали отказов по визе"),
+    ("trips_last_5y", "23. Поездки в Индию"),
+    ("last_visa_details", "24. Номер последней визы и адрес проживания"),
+    ("outside_india", "25. Находитесь за пределами Индии"),
+    ("overstay", "26. Exit permit / превышение сроков"),
 ]
 
 
@@ -467,37 +468,37 @@ def format_application_text(app: sqlite3.Row) -> str:
         f"Создана: {app['created_at']}",
         "",
         f"Пользователь: {uname} (ID {app['user_id']})",
-        f"ФИО: {app['full_name']}",
         "",
-        f"1. Место рождения: {app['place_birth']}",
+        f"1. Фамилия Имя: {app['full_name']}",
+        f"   Место рождения (заявителя): {app['place_birth']}",
         f"2. Электронная почта: {app['email']}",
-        f"3. Номер национального паспорта: {app['passport_number']}",
-        f"4. Домашний адрес: {app['home_address']}",
-        f"5. Номер телефона: {app['phone']}",
-        f"6. ФИО отца: {app['father_name']}",
-        f"7. Место рождения отца: {app['father_birth_place']}",
-        f"8. ФИО матери: {app['mother_name']}",
+        f"3. Серия и номер российского (внутреннего) паспорта: {app['passport_number']}",
+        f"4. Домашний адрес (Город, улица, номер дома, квартира, индекс): {app['home_address']}",
+        f"5. Ваш номер телефона: {app['phone']}",
+        f"6. Фамилия, имя отца (даже если нет в живых): {app['father_name']}",
+        f"7. Место рождения отца (не так важно, можно написать любой город): {app['father_birth_place']}",
+        f"8. Фамилия, имя матери (даже если нет в живых): {app['mother_name']}",
         f"   Место рождения матери: {app['mother_birth_place']}",
-        f"9. Семейное положение: {app['marital_status']}",
-        f"10. ФИО супруга(и): {app['spouse_name']}",
+        f"9. Ваше семейное положение: {app['marital_status']}",
+        f"10. Фамилия, имя супруга(и): {app['spouse_name']}",
         f"11. Место рождения супруга(и): {app['spouse_birth_place']}",
-        f"12. Место работы: {app['work_place']}",
-        f"13. Адрес места работы: {app['work_address']}",
+        f"12. Название организации, в которой вы работаете: {app['work_place']}",
+        f"13. Адрес вашего места работы, должность и рабочий номер телефона: {app['work_address']}",
         f"14. Аэропорт/порт прибытия: {app['airport']}",
-        f"15. Срок визы: {app['visa_term']}",
-        f"16. Дата прибытия: {app['arrival_date']}",
-        f"17. ФИО контактного лица в России: {app['contact_name']}",
-        f"18. Телефон контактного лица: {app['contact_phone']}",
-        f"19. Адрес контактного лица: {app['contact_address']}",
+        f"15. На какой срок нужна виза: {app['visa_term']}",
+        f"16. Дата планируемого прибытия в Индию: {app['arrival_date']}",
+        f"17. Фамилия и имя контактного лица в России: {app['contact_name']}",
+        f"18. Телефон контактного лица в России: {app['contact_phone']}",
+        f"19. Адрес контактного лица в России (город, улица, дом, квартира): {app['contact_address']}",
         f"20. Отель забронирован: {app['hotel_booked']}",
-        f"    Детали отеля: {app['hotel_details']}",
-        f"21. 5-летние визы в Индию и срок действия: {app['five_year_visa']}",
-        f"22. Отказы по визе в Индию: {app['visa_refusal']}",
+        f"    Название и адрес отеля: {app['hotel_details']}",
+        f"21. Были ли вы в Индии ранее: {app['five_year_visa']}",
+        f"22. Были ли у вас отказы по визе в Индию: {app['visa_refusal']}",
         f"    Детали отказов: {app['visa_refusal_details']}",
-        f"23. Поездки в Индию за последние 5 лет: {app['trips_last_5y']}",
-        f"24. Номер последней визы, дата выдачи, адрес проживания: {app['last_visa_details']}",
-        f"25. Сейчас вы за пределами Индии: {app['outside_india']}",
-        f"26. Exit permit / превышения сроков пребывания: {app['overstay']}",
+        f"23. Поездки в Индию: {app['trips_last_5y']}",
+        f"24. Номер последней визы (ETA Number), дата выдачи и адрес проживания по последней поездке: {app['last_visa_details']}",
+        f"25. В момент оформления вы находитесь за пределами Индии: {app['outside_india']}",
+        f"26. Exit permit / превышения сроков пребывания в Индии 90 дней за 1 въезд или 180 дней в году: {app['overstay']}",
     ]
     return "\n".join(lines)
 
@@ -506,37 +507,37 @@ def format_preview_from_data(user: types.User, data: dict) -> str:
     uname = f"@{user.username}" if user.username else "без username"
     lines = [
         f"Ваш username: {uname}",
-        f"ФИО: {data.get('full_name', '')}",
         "",
-        f"1. Место рождения: {data.get('place_birth', '')}",
+        f"1. Фамилия Имя: {data.get('full_name', '')}",
+        f"   Место рождения (заявителя): {data.get('place_birth', '')}",
         f"2. Электронная почта: {data.get('email', '')}",
-        f"3. Номер национального паспорта: {data.get('passport_number', '')}",
-        f"4. Домашний адрес: {data.get('home_address', '')}",
-        f"5. Номер телефона: {data.get('phone', '')}",
-        f"6. ФИО отца: {data.get('father_name', '')}",
-        f"7. Место рождения отца: {data.get('father_birth_place', '')}",
-        f"8. ФИО матери: {data.get('mother_name', '')}",
+        f"3. Серия и номер российского (внутреннего) паспорта: {data.get('passport_number', '')}",
+        f"4. Домашний адрес (Город, улица, номер дома, квартира, индекс): {data.get('home_address', '')}",
+        f"5. Ваш номер телефона: {data.get('phone', '')}",
+        f"6. Фамилия, имя отца (даже если нет в живых): {data.get('father_name', '')}",
+        f"7. Место рождения отца (не так важно, можно написать любой город): {data.get('father_birth_place', '')}",
+        f"8. Фамилия, имя матери (даже если нет в живых): {data.get('mother_name', '')}",
         f"   Место рождения матери: {data.get('mother_birth_place', '')}",
-        f"9. Семейное положение: {data.get('marital_status', '')}",
-        f"10. ФИО супруга(и): {data.get('spouse_name', '')}",
-        f"11. Место рождения супруга(и): {data.get('spouse_birth_place', '')}",
-        f"12. Место работы: {data.get('work_place', '')}",
-        f"13. Адрес места работы: {data.get('work_address', '')}",
-        f"14. Аэропорт/порт прибытия: {data.get('airport', '')}",
-        f"15. Срок визы: {data.get('visa_term', '')}",
-        f"16. Дата прибытия: {data.get('arrival_date', '')}",
-        f"17. ФИО контактного лица в России: {data.get('contact_name', '')}",
-        f"18. Телефон контактного лица: {data.get('contact_phone', '')}",
-        f"19. Адрес контактного лица: {data.get('contact_address', '')}",
+        f"9. Ваше семейное положение: {data.get('marital_status', '')}",
+        f"10. Если вы в браке, Фамилия и имя супруга: {data.get('spouse_name', '')}",
+        f"11. Место рождения вашего супруга: {data.get('spouse_birth_place', '')}",
+        f"12. Название организации, в которой вы работаете: {data.get('work_place', '')}",
+        f"13. Адрес вашего места работы, ваша должность и рабочий номер телефона: {data.get('work_address', '')}",
+        f"14. Аэропорт или порт планируемого прибытия в Индию: {data.get('airport', '')}",
+        f"15. На какой срок нужна виза: {data.get('visa_term', '')}",
+        f"16. Дата планируемого прибытия в Индию: {data.get('arrival_date', '')}",
+        f"17. Фамилия и имя контактного лица в России: {data.get('contact_name', '')}",
+        f"18. Телефон контактного лица в России: {data.get('contact_phone', '')}",
+        f"19. Адрес контактного лица в России (город, улица, дом, квартира): {data.get('contact_address', '')}",
         f"20. Отель забронирован: {data.get('hotel_booked', '')}",
-        f"    Детали отеля: {data.get('hotel_details', '')}",
-        f"21. 5-летние визы в Индию и срок действия: {data.get('five_year_visa', '')}",
-        f"22. Отказы по визе в Индию: {data.get('visa_refusal', '')}",
+        f"    Название и адрес отеля: {data.get('hotel_details', '')}",
+        f"21. Были ли вы в Индии ранее: {data.get('five_year_visa', '')}",
+        f"22. Были ли у вас отказы по визе в Индию: {data.get('visa_refusal', '')}",
         f"    Детали отказов: {data.get('visa_refusal_details', '')}",
-        f"23. Поездки в Индию за последние 5 лет: {data.get('trips_last_5y', '')}",
-        f"24. Номер последней визы, дата выдачи, адрес проживания: {data.get('last_visa_details', '')}",
-        f"25. Сейчас вы за пределами Индии: {data.get('outside_india', '')}",
-        f"26. Exit permit / превышения сроков пребывания: {data.get('overstay', '')}",
+        f"23. Если были поездки в Индию: {data.get('trips_last_5y', '')}",
+        f"24. Номер последней визы (ETA Number), дата выдачи (или описание фото визы/штампа) и адрес проживания по последней поездке (хотя бы город): {data.get('last_visa_details', '')}",
+        f"25. В момент оформления вы находитесь за пределами Индии: {data.get('outside_india', '')}",
+        f"26. Были у вас exit permit или превышения пребывания в Индии 90 дней за 1 въезд или 180 дней в году: {data.get('overstay', '')}",
     ]
     return "\n".join(lines)
 
@@ -596,21 +597,21 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def start_form(message: types.Message, state: FSMContext):
     await state.finish()
     await Form.full_name.set()
-    await message.answer("Ваше ФИО (Фамилия Имя Отчество):")
+    await message.answer("1. Фамилия Имя:")
 
 
 # ---------- ВОПРОСЫ ----------
 
 @dp.message_handler(state=Form.full_name)
 async def form_full_name(message: types.Message, state: FSMContext):
-    await state.update_data(full_name=message.text.strip())
+    await state.update_data(full_name=message.text.strip(), editing=False)
     data = await state.get_data()
     if data.get("editing"):
         await Form.confirm.set()
         await show_preview(message, state)
     else:
         await Form.place_birth.set()
-        await message.answer("1. Место вашего рождения (город/село/область):")
+        await message.answer("Место вашего рождения (город/село/область):")
 
 
 @dp.message_handler(state=Form.place_birth)
@@ -634,7 +635,7 @@ async def form_email(message: types.Message, state: FSMContext):
         await show_preview(message, state)
     else:
         await Form.passport_number.set()
-        await message.answer("3. Номер национального паспорта:")
+        await message.answer("3. Серия и номер российского (внутреннего) паспорта:")
 
 
 @dp.message_handler(state=Form.passport_number)
@@ -684,7 +685,7 @@ async def form_father_name(message: types.Message, state: FSMContext):
         await show_preview(message, state)
     else:
         await Form.father_birth_place.set()
-        await message.answer("7. Место рождения отца:")
+        await message.answer("7. Место рождения отца (не так важно, можно написать любой город):")
 
 
 @dp.message_handler(state=Form.father_birth_place)
@@ -708,7 +709,7 @@ async def form_mother_name(message: types.Message, state: FSMContext):
         await show_preview(message, state)
     else:
         await Form.mother_birth_place.set()
-        await message.answer("8. Место рождения матери:")
+        await message.answer("Место рождения матери:")
 
 
 @dp.message_handler(state=Form.mother_birth_place)
@@ -733,7 +734,7 @@ async def form_marital_status(message: types.Message, state: FSMContext):
     else:
         await Form.spouse_name.set()
         await message.answer(
-            "10. Если вы в браке, укажите фамилию и имя вашего супруга(и). "
+            "10. Если вы в браке, укажите фамилию и имя вашего супруга. "
             "Если не в браке, напишите «нет»:"
         )
 
@@ -748,7 +749,7 @@ async def form_spouse_name(message: types.Message, state: FSMContext):
     else:
         await Form.spouse_birth_place.set()
         await message.answer(
-            "11. Место рождения вашего супруга(и). "
+            "11. Место рождения вашего супруга. "
             "Если не в браке, напишите «нет»:"
         )
 
@@ -763,7 +764,7 @@ async def form_spouse_birth_place(message: types.Message, state: FSMContext):
     else:
         await Form.work_place.set()
         await message.answer(
-            "12. Название вашего места работы "
+            "12. Название организации, в которой вы работаете "
             "(если не работаете, напишите «безработный(ая)»):"
         )
 
@@ -778,7 +779,7 @@ async def form_work_place(message: types.Message, state: FSMContext):
     else:
         await Form.work_address.set()
         await message.answer(
-            "13. Адрес вашего места работы "
+            "13. Адрес вашего места работы, ваша должность и рабочий номер телефона "
             "(если не работаете, напишите «безработный(ая)»):"
         )
 
@@ -812,7 +813,8 @@ async def form_airport(callback_query: CallbackQuery, state: FSMContext):
     else:
         await Form.visa_term.set()
         await callback_query.message.answer(
-            "15. На какой срок нужна виза:", reply_markup=visa_term_kb()
+            "15. На какой срок нужна виза:",
+            reply_markup=visa_term_kb()
         )
 
 
@@ -877,7 +879,9 @@ async def form_contact_phone(message: types.Message, state: FSMContext):
         await show_preview(message, state)
     else:
         await Form.contact_address.set()
-        await message.answer("19. Адрес контактного лица в России:")
+        await message.answer(
+            "19. Адрес контактного лица в России (город, улица, дом, квартира):"
+        )
 
 
 @dp.message_handler(state=Form.contact_address)
@@ -890,7 +894,7 @@ async def form_contact_address(message: types.Message, state: FSMContext):
     else:
         await Form.hotel_booked.set()
         await message.answer(
-            "20. Если забронирован отель, выберите «Да». Если нет — «Нет»:",
+            "Отель забронирован? Выберите «Да» или «Нет»:",
             reply_markup=yes_no_kb("hotel"),
         )
 
@@ -905,7 +909,9 @@ async def form_hotel(callback_query: CallbackQuery, state: FSMContext):
 
     if value == "Да":
         await Form.hotel_details.set()
-        await callback_query.message.answer("Укажите название отеля и его адрес:")
+        await callback_query.message.answer(
+            "20. Если забронирован отель, напишите название отеля и его адрес:"
+        )
     else:
         if data.get("editing"):
             await Form.confirm.set()
@@ -913,7 +919,7 @@ async def form_hotel(callback_query: CallbackQuery, state: FSMContext):
         else:
             await Form.five_year_visa.set()
             await callback_query.message.answer(
-                "21. Были ли у вас 5-летние визы в Индию?",
+                "21. Были ли вы в Индии ранее?",
                 reply_markup=yes_no_kb("fivevisa"),
             )
 
@@ -928,7 +934,7 @@ async def form_hotel_details(message: types.Message, state: FSMContext):
     else:
         await Form.five_year_visa.set()
         await message.answer(
-            "21. Были ли у вас 5-летние визы в Индию?",
+            "21. Были ли вы в Индии ранее?",
             reply_markup=yes_no_kb("fivevisa"),
         )
 
@@ -955,8 +961,8 @@ async def form_five_year_visa_cb(callback_query: CallbackQuery, state: FSMContex
         await state.update_data(five_year_visa="Да")
         await Form.five_year_visa_details.set()
         await callback_query.message.answer(
-            "Укажите срок, до которого действовала 5-летняя виза, "
-            "и любую дополнительную информацию:"
+            "Если вы уже были в Индии ранее, кратко укажите когда и с какой целью поездок "
+            "(можно приблизительно):"
         )
 
 
@@ -1003,7 +1009,7 @@ async def form_visa_refusal(callback_query: CallbackQuery, state: FSMContext):
         else:
             await Form.trips_last_5y.set()
             await callback_query.message.answer(
-                "23. Если были поездки в Индию за последние 5 лет, "
+                "23. Если были поездки в Индию, "
                 "укажите даты и цель поездок:"
             )
 
@@ -1018,7 +1024,7 @@ async def form_visa_refusal_details(message: types.Message, state: FSMContext):
     else:
         await Form.trips_last_5y.set()
         await message.answer(
-            "23. Если были поездки в Индию за последние 5 лет, "
+            "23. Если были поездки в Индию, "
             "укажите даты и цель поездок:"
         )
 
@@ -1033,8 +1039,9 @@ async def form_trips_last_5y(message: types.Message, state: FSMContext):
     else:
         await Form.last_visa_details.set()
         await message.answer(
-            "24. Номер последней визы, дата выдачи последней визы, "
-            "адрес проживания по последней поездке:"
+            "24. Номер последней визы (ETA Number), дата выдачи последней визы "
+            "(или опишите фото визы/штампа из паспорта) и адрес проживания по последней поездке "
+            "(хотя бы город):"
         )
 
 
@@ -1085,6 +1092,141 @@ async def form_overstay(callback_query: CallbackQuery, state: FSMContext):
     await show_preview(callback_query.message, state)
 
 
+# ---------- РЕДАКТИРОВАНИЕ ОТДЕЛЬНЫХ ПОЛЕЙ ----------
+
+@dp.callback_query_handler(lambda c: c.data.startswith("edit:"), state=Form.confirm)
+async def edit_field(callback_query: CallbackQuery, state: FSMContext):
+    field = callback_query.data.split(":", 1)[1]
+    await state.update_data(editing=True)
+    await callback_query.answer()
+    msg = callback_query.message
+
+    if field == "full_name":
+        await Form.full_name.set()
+        await msg.answer("1. Фамилия Имя:")
+    elif field == "place_birth":
+        await Form.place_birth.set()
+        await msg.answer("Место вашего рождения (город/село/область):")
+    elif field == "email":
+        await Form.email.set()
+        await msg.answer("2. Ваша электронная почта:")
+    elif field == "passport_number":
+        await Form.passport_number.set()
+        await msg.answer("3. Серия и номер российского (внутреннего) паспорта:")
+    elif field == "home_address":
+        await Form.home_address.set()
+        await msg.answer("4. Домашний адрес (Город, улица, номер дома, квартира, индекс):")
+    elif field == "phone":
+        await Form.phone.set()
+        await msg.answer("5. Ваш номер телефона:")
+    elif field == "father_name":
+        await Form.father_name.set()
+        await msg.answer("6. Фамилия, имя отца (даже если нет в живых):")
+    elif field == "father_birth_place":
+        await Form.father_birth_place.set()
+        await msg.answer("7. Место рождения отца (не так важно, можно написать любой город):")
+    elif field == "mother_name":
+        await Form.mother_name.set()
+        await msg.answer("8. Фамилия, имя матери (даже если нет в живых):")
+    elif field == "mother_birth_place":
+        await Form.mother_birth_place.set()
+        await msg.answer("Место рождения матери:")
+    elif field == "marital_status":
+        await Form.marital_status.set()
+        await msg.answer("9. Ваше семейное положение:")
+    elif field == "spouse_name":
+        await Form.spouse_name.set()
+        await msg.answer(
+            "10. Если вы в браке, укажите фамилию и имя вашего супруга. "
+            "Если не в браке, напишите «нет»:"
+        )
+    elif field == "spouse_birth_place":
+        await Form.spouse_birth_place.set()
+        await msg.answer(
+            "11. Место рождения вашего супруга. "
+            "Если не в браке, напишите «нет»:"
+        )
+    elif field == "work_place":
+        await Form.work_place.set()
+        await msg.answer(
+            "12. Название организации, в которой вы работаете "
+            "(если не работаете, напишите «безработный(ая)»):"
+        )
+    elif field == "work_address":
+        await Form.work_address.set()
+        await msg.answer(
+            "13. Адрес вашего места работы, ваша должность и рабочий номер телефона "
+            "(если не работаете, напишите «безработный(ая)»):"
+        )
+    elif field == "airport":
+        await Form.airport.set()
+        await msg.answer("14. Аэропорт или порт планируемого прибытия в Индию:",
+                         reply_markup=airport_kb())
+    elif field == "visa_term":
+        await Form.visa_term.set()
+        await msg.answer("15. На какой срок нужна виза:", reply_markup=visa_term_kb())
+    elif field == "arrival_date":
+        await Form.arrival_date.set()
+        await msg.answer(
+            "16. Дата планируемого прибытия в Индию (выберите дату на календаре):",
+            reply_markup=create_calendar(),
+        )
+    elif field == "contact_name":
+        await Form.contact_name.set()
+        await msg.answer("17. Фамилия и имя контактного лица в России:")
+    elif field == "contact_phone":
+        await Form.contact_phone.set()
+        await msg.answer("18. Телефон контактного лица в России:")
+    elif field == "contact_address":
+        await Form.contact_address.set()
+        await msg.answer("19. Адрес контактного лица в России (город, улица, дом, квартира):")
+    elif field == "hotel_booked":
+        await Form.hotel_booked.set()
+        await msg.answer("Отель забронирован? Выберите «Да» или «Нет»:",
+                         reply_markup=yes_no_kb("hotel"))
+    elif field == "hotel_details":
+        await Form.hotel_details.set()
+        await msg.answer("20. Название отеля и его адрес:")
+    elif field == "five_year_visa":
+        await Form.five_year_visa.set()
+        await msg.answer("21. Были ли вы в Индии ранее?", reply_markup=yes_no_kb("fivevisa"))
+    elif field == "visa_refusal":
+        await Form.visa_refusal.set()
+        await msg.answer("22. Были ли у вас отказы по визе в Индию:",
+                         reply_markup=yes_no_kb("vref"))
+    elif field == "visa_refusal_details":
+        await Form.visa_refusal_details.set()
+        await msg.answer("Опишите, по какой причине были отказы по визе в Индию:")
+    elif field == "trips_last_5y":
+        await Form.trips_last_5y.set()
+        await msg.answer(
+            "23. Если были поездки в Индию, укажите даты и цель поездок:"
+        )
+    elif field == "last_visa_details":
+        await Form.last_visa_details.set()
+        await msg.answer(
+            "24. Номер последней визы (ETA Number), дата выдачи последней визы "
+            "(или опишите фото визы/штампа из паспорта) и адрес проживания по последней поездке "
+            "(хотя бы город):"
+        )
+    elif field == "outside_india":
+        await Form.outside_india.set()
+        await msg.answer(
+            "25. В момент оформления вы находитесь за пределами Индии?",
+            reply_markup=yes_no_kb("outindia"),
+        )
+    elif field == "overstay":
+        await Form.overstay.set()
+        await msg.answer(
+            "26. Были у вас exit permit или превышения пребывания в Индии "
+            "90 дней за 1 въезд или 180 дней в году?",
+            reply_markup=yes_no_kb("overstay"),
+        )
+    else:
+        # на всякий случай
+        await msg.answer("Неизвестное поле для редактирования.")
+
+
 # ---------- ПРЕДПРОСМОТР / ОТПРАВКА / РЕДАКТИРОВАНИЕ ----------
 
 @dp.callback_query_handler(lambda c: c.data == "confirm:send", state=Form.confirm)
@@ -1119,404 +1261,223 @@ async def confirm_edit(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith("edit:"), state=Form.confirm)
-async def edit_field(callback_query: CallbackQuery, state: FSMContext):
-    field = callback_query.data.split(":", 1)[1]
-
-    if field == "full_name":
-        await Form.full_name.set()
-        await callback_query.message.answer("Ваше ФИО (Фамилия Имя Отчество):")
-    elif field == "place_birth":
-        await Form.place_birth.set()
-        await callback_query.message.answer(
-            "1. Место вашего рождения (город/село/область):"
-        )
-    elif field == "email":
-        await Form.email.set()
-        await callback_query.message.answer("2. Ваша электронная почта:")
-    elif field == "passport_number":
-        await Form.passport_number.set()
-        await callback_query.message.answer("3. Номер национального паспорта:")
-    elif field == "home_address":
-        await Form.home_address.set()
-        await callback_query.message.answer(
-            "4. Домашний адрес (Город, улица, номер дома, квартира, индекс):"
-        )
-    elif field == "phone":
-        await Form.phone.set()
-        await callback_query.message.answer("5. Ваш номер телефона:")
-    elif field == "father_name":
-        await Form.father_name.set()
-        await callback_query.message.answer("6. Фамилия, имя отца (даже если нет в живых):")
-    elif field == "father_birth_place":
-        await Form.father_birth_place.set()
-        await callback_query.message.answer("7. Место рождения отца:")
-    elif field == "mother_name":
-        await Form.mother_name.set()
-        await callback_query.message.answer("8. Фамилия, имя матери (даже если нет в живых):")
-    elif field == "mother_birth_place":
-        await Form.mother_birth_place.set()
-        await callback_query.message.answer("8. Место рождения матери:")
-    elif field == "marital_status":
-        await Form.marital_status.set()
-        await callback_query.message.answer("9. Ваше семейное положение:")
-    elif field == "spouse_name":
-        await Form.spouse_name.set()
-        await callback_query.message.answer(
-            "10. Если вы в браке, укажите фамилию и имя вашего супруга(и). "
-            "Если не в браке, напишите «нет»:"
-        )
-    elif field == "spouse_birth_place":
-        await Form.spouse_birth_place.set()
-        await callback_query.message.answer(
-            "11. Место рождения вашего супруга(и). "
-            "Если не в браке, напишите «нет»:"
-        )
-    elif field == "work_place":
-        await Form.work_place.set()
-        await callback_query.message.answer(
-            "12. Название вашего места работы "
-            "(если не работаете, напишите «безработный(ая)»):"
-        )
-    elif field == "work_address":
-        await Form.work_address.set()
-        await callback_query.message.answer(
-            "13. Адрес вашего места работы "
-            "(если не работаете, напишите «безработный(ая)»):"
-        )
-    elif field == "airport":
-        await Form.airport.set()
-        await callback_query.message.answer(
-            "14. Аэропорт или порт планируемого прибытия в Индию:",
-            reply_markup=airport_kb(),
-        )
-    elif field == "visa_term":
-        await Form.visa_term.set()
-        await callback_query.message.answer(
-            "15. На какой срок нужна виза:",
-            reply_markup=visa_term_kb(),
-        )
-    elif field == "arrival_date":
-        await Form.arrival_date.set()
-        await callback_query.message.answer(
-            "16. Дата планируемого прибытия в Индию:",
-            reply_markup=create_calendar(),
-        )
-    elif field == "contact_name":
-        await Form.contact_name.set()
-        await callback_query.message.answer("17. Фамилия и имя контактного лица в России:")
-    elif field == "contact_phone":
-        await Form.contact_phone.set()
-        await callback_query.message.answer("18. Телефон контактного лица в России:")
-    elif field == "contact_address":
-        await Form.contact_address.set()
-        await callback_query.message.answer("19. Адрес контактного лица в России:")
-    elif field == "hotel_booked":
-        await Form.hotel_booked.set()
-        await callback_query.message.answer(
-            "20. Если забронирован отель, выберите «Да». Если нет — «Нет»:",
-            reply_markup=yes_no_kb("hotel"),
-        )
-    elif field == "five_year_visa":
-        await Form.five_year_visa.set()
-        await callback_query.message.answer(
-            "21. Были ли у вас 5-летние визы в Индию?",
-            reply_markup=yes_no_kb("fivevisa"),
-        )
-    elif field == "visa_refusal":
-        await Form.visa_refusal.set()
-        await callback_query.message.answer(
-            "22. Были ли у вас отказы по визе в Индию:",
-            reply_markup=yes_no_kb("vref"),
-        )
-    elif field == "trips_last_5y":
-        await Form.trips_last_5y.set()
-        await callback_query.message.answer(
-            "23. Если были поездки в Индию за последние 5 лет, "
-            "укажите даты и цель поездок:"
-        )
-    elif field == "last_visa_details":
-        await Form.last_visa_details.set()
-        await callback_query.message.answer(
-            "24. Номер последней визы, дата выдачи последней визы, "
-            "адрес проживания по последней поездке:"
-        )
-    elif field == "outside_india":
-        await Form.outside_india.set()
-        await callback_query.message.answer(
-            "25. В момент оформления вы находитесь за пределами Индии?",
-            reply_markup=yes_no_kb("outindia"),
-        )
-    elif field == "overstay":
-        await Form.overstay.set()
-        await callback_query.message.answer(
-            "26. Были у вас exit permit или превышения пребывания в Индии "
-            "90 дней за 1 въезд или 180 дней в году?",
-            reply_markup=yes_no_kb("overstay"),
-        )
-
-    await callback_query.answer()
-
-
 # ===================== АДМИН-ПАНЕЛЬ =====================
 
+@dp.message_handler(commands=["admin"])
 @dp.message_handler(lambda m: m.text == "Админ-панель")
 async def admin_panel(message: types.Message):
     if not is_admin(message.from_user.id):
-        await message.answer("Админ-панель доступна только администраторам.")
+        await message.answer("У вас нет прав администратора.")
         return
+
     await message.answer("Админ-панель:", reply_markup=admin_panel_kb())
 
 
 @dp.callback_query_handler(lambda c: c.data == "admin:new")
 async def admin_new(callback_query: CallbackQuery):
     if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
+        await callback_query.answer("Нет доступа.", show_alert=True)
         return
 
-    apps = list_applications(only_pending=True, limit=20)
-    if not apps:
+    rows = list_applications(only_pending=True, limit=20)
+    if not rows:
         await callback_query.message.answer("Новых заявок нет.")
-    else:
-        for app in apps:
-            uname = f"@{app['username']}" if app["username"] else "без username"
-            status = app["status"] or "в ожидании"
-            text = (
-                f"Заявка №{app['id']} от {app['created_at']}\n"
-                f"Пользователь: {uname}\n"
-                f"Статус: {status}"
-            )
-            kb = InlineKeyboardMarkup().add(
-                InlineKeyboardButton(
-                    "Открыть", callback_data=f"admin:open:{app['id']}"
-                )
-            )
-            await callback_query.message.answer(text, reply_markup=kb)
+        await callback_query.answer()
+        return
 
     await callback_query.answer()
+    for row in rows:
+        uname = f"@{row['username']}" if row["username"] else "без username"
+        txt = (
+            f"Заявка №{row['id']} от {row['created_at']}\n"
+            f"Пользователь: {uname}\n"
+            f"Статус: {row['status']}"
+        )
+        await callback_query.message.answer(
+            txt,
+            reply_markup=admin_application_kb(row["id"]),
+        )
 
 
 @dp.callback_query_handler(lambda c: c.data == "admin:all")
 async def admin_all(callback_query: CallbackQuery):
     if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
+        await callback_query.answer("Нет доступа.", show_alert=True)
         return
 
-    apps = list_applications(only_pending=False, limit=20)
-    if not apps:
+    rows = list_applications(only_pending=False, limit=20)
+    if not rows:
         await callback_query.message.answer("Заявок пока нет.")
-    else:
-        for app in apps:
-            uname = f"@{app['username']}" if app["username"] else "без username"
-            status = app["status"] or "в ожидании"
-            text = (
-                f"Заявка №{app['id']} от {app['created_at']}\n"
-                f"Пользователь: {uname}\n"
-                f"Статус: {status}"
-            )
-            kb = InlineKeyboardMarkup().add(
-                InlineKeyboardButton(
-                    "Открыть", callback_data=f"admin:open:{app['id']}"
-                )
-            )
-            await callback_query.message.answer(text, reply_markup=kb)
+        await callback_query.answer()
+        return
 
     await callback_query.answer()
+    for row in rows:
+        uname = f"@{row['username']}" if row["username"] else "без username"
+        txt = (
+            f"Заявка №{row['id']} от {row['created_at']}\n"
+            f"Пользователь: {uname}\n"
+            f"Статус: {row['status']}"
+        )
+        await callback_query.message.answer(
+            txt,
+            reply_markup=admin_application_kb(row["id"]),
+        )
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith("admin:open:"))
-async def admin_open(callback_query: CallbackQuery):
+@dp.callback_query_handler(lambda c: c.data == "admin:admins")
+async def admin_list_admins(callback_query: CallbackQuery):
     if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
+        await callback_query.answer("Нет доступа.", show_alert=True)
         return
 
-    try:
-        app_id = int(callback_query.data.split(":", 2)[2])
-    except ValueError:
-        await callback_query.answer("Ошибка ID", show_alert=True)
+    admins = get_admins()
+    if not admins:
+        await callback_query.message.answer("Админов пока нет.")
+        await callback_query.answer()
         return
 
-    app = get_application(app_id)
-    if not app:
-        await callback_query.answer("Заявка не найдена", show_alert=True)
-        return
+    lines = ["Список админов:"]
+    for adm in admins:
+        tag = f"@{adm['username']}" if adm["username"] else f"ID {adm['user_id']}"
+        role = "супер-админ" if adm["is_superadmin"] else "админ"
+        lines.append(f"- {tag} ({role})")
 
-    text = format_application_text(app)
-    await callback_query.message.answer(text, reply_markup=admin_application_kb(app_id))
+    await callback_query.message.answer("\n".join(lines))
     await callback_query.answer()
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith("approve:"))
 async def admin_approve(callback_query: CallbackQuery):
     if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
+        await callback_query.answer("Нет доступа.", show_alert=True)
         return
 
-    try:
-        app_id = int(callback_query.data.split(":", 1)[1])
-    except ValueError:
-        await callback_query.answer("Ошибка ID", show_alert=True)
-        return
-
+    app_id = int(callback_query.data.split(":", 1)[1])
     app = get_application(app_id)
     if not app:
-        await callback_query.answer("Заявка не найдена", show_alert=True)
+        await callback_query.answer("Заявка не найдена.", show_alert=True)
         return
 
-    update_application_status(app_id, "одобрена", callback_query.from_user.id)
-    await callback_query.answer("Анкета одобрена.")
+    update_application_status(app_id, "одобрена", callback_query.from_user.id, "")
+    await callback_query.answer("Заявка одобрена.")
 
+    await callback_query.message.answer(f"Заявка №{app_id} помечена как одобренная.")
+
+    # уведомить пользователя
     try:
         await bot.send_message(
             app["user_id"],
-            f"Ваша анкета №{app_id} одобрена.",
+            f"Ваша анкета №{app_id} одобрена администратором.",
         )
     except Exception as e:
-        logging.warning(f"Не удалось отправить уведомление пользователю: {e}")
+        logging.warning(f"Не удалось уведомить пользователя {app['user_id']}: {e}")
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith("reject:"))
 async def admin_reject(callback_query: CallbackQuery):
     if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
+        await callback_query.answer("Нет доступа.", show_alert=True)
         return
 
-    try:
-        app_id = int(callback_query.data.split(":", 1)[1])
-    except ValueError:
-        await callback_query.answer("Ошибка ID", show_alert=True)
-        return
-
+    app_id = int(callback_query.data.split(":", 1)[1])
     app = get_application(app_id)
     if not app:
-        await callback_query.answer("Заявка не найдена", show_alert=True)
+        await callback_query.answer("Заявка не найдена.", show_alert=True)
         return
 
-    update_application_status(app_id, "отклонена", callback_query.from_user.id)
-    await callback_query.answer("Анкета отклонена.")
+    update_application_status(app_id, "отклонена", callback_query.from_user.id, "")
+    await callback_query.answer("Заявка отклонена.")
 
+    await callback_query.message.answer(f"Заявка №{app_id} помечена как отклонённая.")
+
+    # уведомить пользователя
     try:
         await bot.send_message(
             app["user_id"],
-            f"Ваша анкета №{app_id} отклонена. "
-            "При необходимости свяжитесь с администратором.",
+            f"Ваша анкета №{app_id} отклонена администратором.",
         )
     except Exception as e:
-        logging.warning(f"Не удалось отправить уведомление пользователю: {e}")
+        logging.warning(f"Не удалось уведомить пользователя {app['user_id']}: {e}")
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith("msguser:"))
 async def admin_msg_user(callback_query: CallbackQuery, state: FSMContext):
     if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
+        await callback_query.answer("Нет доступа.", show_alert=True)
         return
 
-    try:
-        app_id = int(callback_query.data.split(":", 1)[1])
-    except ValueError:
-        await callback_query.answer("Ошибка ID", show_alert=True)
-        return
-
+    app_id = int(callback_query.data.split(":", 1)[1])
     app = get_application(app_id)
     if not app:
-        await callback_query.answer("Заявка не найдена", show_alert=True)
+        await callback_query.answer("Заявка не найдена.", show_alert=True)
         return
 
-    target_user_id = app["user_id"]
+    await state.set_state(AdminDialog.waiting_for_text.state)
+    await state.update_data(msg_target=app["user_id"], msg_app_id=app_id)
 
-    await AdminDialog.waiting_for_text.set()
-    await state.update_data(target_user_id=target_user_id)
     await callback_query.message.answer(
-        f"Напишите сообщение, которое нужно отправить пользователю "
-        f"(@{app['username'] or 'без username'}). Оно будет отправлено от имени бота."
+        f"Напишите текст сообщения пользователю по заявке №{app_id}:"
     )
     await callback_query.answer()
 
 
-@dp.message_handler(state=AdminDialog.waiting_for_text, content_types=types.ContentTypes.TEXT)
-async def admin_send_text_to_user(message: types.Message, state: FSMContext):
-    if not is_admin(message.from_user.id):
-        await message.answer("Только администратор может отправлять такие сообщения.")
-        await state.finish()
-        return
-
+@dp.message_handler(state=AdminDialog.waiting_for_text)
+async def admin_send_text(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    target_user_id = data.get("target_user_id")
-    if not target_user_id:
-        await message.answer("Ошибка: не выбран получатель.")
+    target_id = data.get("msg_target")
+    app_id = data.get("msg_app_id")
+
+    if not target_id:
+        await message.answer("Не удалось определить пользователя.")
         await state.finish()
         return
 
+    text = message.text.strip()
     try:
         await bot.send_message(
-            target_user_id,
-            "Сообщение от администратора:\n\n" + message.text.strip(),
+            target_id,
+            f"Сообщение от администратора по вашей заявке №{app_id}:\n\n{text}",
         )
         await message.answer("Сообщение отправлено пользователю.")
     except Exception as e:
-        logging.warning(f"Не удалось отправить сообщение пользователю: {e}")
+        logging.warning(f"Не удалось отправить сообщение пользователю {target_id}: {e}")
         await message.answer("Не удалось отправить сообщение пользователю.")
 
     await state.finish()
 
 
-@dp.callback_query_handler(lambda c: c.data == "admin:admins")
-async def admin_list_admins(callback_query: CallbackQuery):
-    if not is_admin(callback_query.from_user.id):
-        await callback_query.answer("Нет доступа", show_alert=True)
-        return
-
-    admins = get_admins()
-    if not admins:
-        await callback_query.message.answer("Администраторы не найдены.")
-    else:
-        lines = ["Список администраторов:"]
-        for adm in admins:
-            uname = f"@{adm['username']}" if adm["username"] else "без username"
-            marker = " (главный)" if adm["is_superadmin"] == 1 else ""
-            lines.append(f"- {uname} (ID {adm['user_id']}){marker}")
-        await callback_query.message.answer("\n".join(lines))
-
-    await callback_query.answer()
-
-
 @dp.callback_query_handler(lambda c: c.data.startswith("makeadmin:"))
 async def admin_make_admin(callback_query: CallbackQuery):
     if not is_superadmin(callback_query.from_user.id):
-        await callback_query.answer(
-            "Только главный администратор может назначать админов.",
-            show_alert=True,
-        )
+        await callback_query.answer("Только супер-админ может назначать админов.", show_alert=True)
         return
 
-    try:
-        app_id = int(callback_query.data.split(":", 1)[1])
-    except ValueError:
-        await callback_query.answer("Ошибка ID", show_alert=True)
-        return
-
+    app_id = int(callback_query.data.split(":", 1)[1])
     app = get_application(app_id)
     if not app:
-        await callback_query.answer("Заявка не найдена", show_alert=True)
+        await callback_query.answer("Заявка не найдена.", show_alert=True)
         return
 
-    target_user_id = app["user_id"]
-    target_username = app["username"] or ""
+    user_id = app["user_id"]
+    username = app["username"] or ""
 
-    upsert_admin(target_user_id, target_username, is_super=False)
+    upsert_admin(user_id, username, is_super=False)
     await callback_query.answer("Пользователь назначен администратором.")
+    await callback_query.message.answer(
+        f"Пользователь ID {user_id} назначен администратором."
+    )
 
     try:
         await bot.send_message(
-            target_user_id,
-            "Вы назначены администратором бота. "
-            "Перезапустите диалог с помощью /start, чтобы увидеть админ-панель.",
+            user_id,
+            "Вы были назначены администратором бота.",
         )
     except Exception as e:
-        logging.warning(f"Не удалось уведомить нового админа: {e}")
+        logging.warning(f"Не удалось уведомить нового админа {user_id}: {e}")
 
 
-# ===================== ЗАПУСК =====================
+# ---------- ЗАПУСК БОТА ----------
 
 if __name__ == "__main__":
     init_db()
